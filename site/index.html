@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light dark">
+  <title>Plan instalacji</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Schibsted+Grotesk:wght@400..800&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <script src="vendor/supabase-2.117.3.js"></script>
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <div class="boot" id="boot">Ładowanie…</div>
+
+  <main class="login" id="login" hidden>
+    <form class="sheet login-card" id="login-form" novalidate>
+      <div class="eyebrow">Smart Home · plan instalacji</div>
+      <h1>Zaloguj się</h1>
+      <p class="note">Dostęp tylko dla właściciela. Konto zakłada się w panelu Supabase, nie ma tu rejestracji.</p>
+      <label for="login-email">E-mail</label>
+      <input id="login-email" name="email" type="email" autocomplete="username" inputmode="email" required>
+      <label for="login-password">Hasło</label>
+      <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+      <p class="error" id="login-error" role="alert" hidden></p>
+      <button type="submit" class="btn primary" id="login-submit">Zaloguj się</button>
+    </form>
+  </main>
+
+  <div class="wrap" id="app" hidden>
+    <header>
+      <div class="topbar">
+        <div class="eyebrow">Remont · Apple Home (Hem) · edytor punktów</div>
+        <div class="account"><span id="account-email"></span><button type="button" class="btn" id="logout">Wyloguj</button></div>
+      </div>
+      <h1>Plan instalacji Smart Home</h1>
+      <p class="lead">Wybierz, co chcesz zrobić, i dotknij miejsca na rzucie. Przy każdym punkcie widzisz, czego potrzeba, ile to kosztuje i co powiedzieć elektrykowi. Przerywane kółka to podpowiedzi: dodasz je jednym dotknięciem albo pominiesz.</p>
+      <div class="status" id="status"><span class="dot"></span><span>Łączenie…</span></div>
+      <dl class="facts" id="facts"></dl>
+    </header>
+
+    <div class="sheet notice" id="notice" hidden></div>
+
+    <section class="workspace" id="workspace" aria-label="Rzut z punktami">
+      <div class="plan-col">
+        <div class="toolbar">
+          <div class="seg" role="group" aria-label="Kondygnacja" id="floors"></div>
+          <div class="grp">
+            <button type="button" class="btn" id="ghosts" aria-pressed="true">Podpowiedzi</button>
+            <button type="button" class="btn" id="zoom" aria-pressed="false">Powiększ</button>
+            <button type="button" class="btn primary" id="add">+ Dodaj punkt</button>
+          </div>
+        </div>
+        <div class="mode" id="mode" hidden></div>
+        <div class="layers" id="layers" role="group" aria-label="Kategorie"></div>
+        <div class="sheet plan-frame" id="frame"></div>
+        <p class="plan-note">Rysunek poglądowy, wymiary orientacyjne. Pełne kółka to Twoje punkty, przerywane to podpowiedzi.</p>
+      </div>
+      <div class="side-col">
+        <div class="sheet panel" id="panel" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-hints">
+      <h2 id="h-hints">Podpowiedzi do Twojego planu</h2>
+      <ul class="hints" id="hints"></ul>
+    </section>
+
+    <section aria-labelledby="h-shop">
+      <h2 id="h-shop">Lista zakupów</h2>
+      <p class="note">Liczona z Twoich punktów. Ceny orientacyjne z października 2026; potwierdzona w kronach jest tylko cena HomePod mini 2 (1 895 kr). Robocizna elektryka nie jest wliczona (ulga ROT 30%).</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Produkt</th><th class="num">Ilość</th><th class="num">Cena</th><th class="num">Razem</th></tr></thead>
+          <tbody id="shop"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-rooms">
+      <h2 id="h-rooms">Pokój po pokoju</h2>
+      <div class="rooms" id="rooms"></div>
+    </section>
+
+    <section class="sheet sv" aria-labelledby="h-sv">
+      <h2 id="h-sv">Till elektrikern <small>sammanfattning</small></h2>
+      <p class="note">Tekst po szwedzku generowany z Twoich punktów. Kody są takie same jak na rzucie.</p>
+      <ol class="list" id="sv-list" lang="sv"></ol>
+      <button type="button" class="btn copy" id="copy-sv">Kopiuj tekst</button>
+    </section>
+
+    <section aria-labelledby="h-cat">
+      <h2 id="h-cat">Co możesz zrobić</h2>
+      <p class="note">Wszystkie typy punktów z podpowiedziami. Każdy działa z aplikacją Hem przez Matter lub HomeKit.</p>
+      <div class="catalog" id="catalog"></div>
+    </section>
+
+    <footer>Dane planu są w bazie i widoczne tylko po zalogowaniu.</footer>
+  </div>
+
+  <div class="overlay" id="overlay" hidden>
+    <div class="picker" role="dialog" aria-modal="true" aria-labelledby="pick-title">
+      <div class="top">
+        <h3 id="pick-title">Co chcesz dodać?</h3>
+        <button type="button" class="btn" id="pick-close">Zamknij</button>
+      </div>
+      <input type="search" id="pick-q" placeholder="Szukaj, np. LED, okno, kamera" autocomplete="off">
+      <div id="pick-list"></div>
+    </div>
+  </div>
+</body>
+</html>

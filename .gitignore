@@ -1,0 +1,6 @@
+# Private data must never be committed (floor plan, allow-list seeds, keys)
+*PRIVATE*
+.env
+.env.*
+node_modules/
+.DS_Store

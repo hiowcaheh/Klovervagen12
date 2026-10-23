@@ -1,29 +1,14 @@
-# Home OS
+# Smart Home planner
 
-A custom smart home platform built around an interactive 3D model of the house.
+A small web page for planning a smart home during a renovation: place points on the floor plan and
+get the device, power supply, cabling, cost estimate and a brief for the electrician. Devices are
+planned for Apple Home (Matter and HomeKit).
 
-- **Local-first**: devices are controlled through Home Assistant on the home network and keep working
-  without internet.
-- **One app** for iPhone, a wall-mounted iPad and desktop browsers (installable PWA).
-- **Digital twin**: lights, blinds, openings, motion and offline devices are shown on the model.
-- **Demo mode**: the public build runs entirely in the browser with simulated devices and a generic
-  demo house.
+- **Live page:** https://hiowcaheh.github.io/Klovervagen12/ (login required, no sign-up)
+- **Code:** `site/` (static, no build step), database schema in `supabase/migrations/`
+- **Decisions:** [docs/adr](docs/adr/README.md); the earlier custom platform design is on hold in
+  [docs/specs](docs/specs/2026-10-22-platform-design.md)
+- **For Claude sessions:** [CLAUDE.md](CLAUDE.md)
 
-> This repository contains code, demo data and generic documentation only. No private data about the
-> real house is stored here.
-
-## Status
-
-Stage **E0**: architecture and specification under review. The first deployable version (E1 + E2) will
-be published to GitHub Pages.
-
-## Documentation
-
-- [Platform design](docs/specs/2026-10-22-platform-design.md)
-- [Architecture decisions](docs/adr/README.md)
-- [Guide for Claude sessions](CLAUDE.md)
-
-## Stack
-
-React · TypeScript · Vite · Tailwind CSS · React Three Fiber · Zustand · TanStack Query · Supabase ·
-Home Assistant
+> The repository is public. It contains generic code only; the floor plan and all planning data are
+> stored in Supabase and readable only after login.
